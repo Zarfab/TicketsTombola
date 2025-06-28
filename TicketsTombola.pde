@@ -1,15 +1,20 @@
 import processing.pdf.*;
 
-String exampleFile = "demo/example.png";
+String exampleFile = "demo/example.png";  // image de fond pour le talon + ticket détachable, taille = 1425 x 495 pixels
+                                          // voir l'image de démo pour les détails, elle a été créée sur le site web canva.com 
 PImage img;
-final int indexBeg = 1;
-final int nbDigitsForIndex = 3;
-final PVector[] indexCoordinates = { new PVector(384, 450), new PVector(1280, 450)};
-final int indexFontSize = 34;
+final int indexBeg = 1;                // numéro du premier ticket généré (pratique si on veut aggrandir la série actuellement en vente)
+final int nbDigitsForIndex = 3;        // nombre de caratères pour le numéro de ticket, exemple : '001' si égal à 3
+final PVector[] indexCoordinates = {   // coordonnées ou écrire le numéro du ticket
+  new PVector(384, 450),               // peut être affiché à plusieurs endroits (talon + ticket détachable)
+  new PVector(1280, 450)
+};
+final int indexFontSize = 34;          // taille de police pour l'intégration du numéro de ticket
 
-final int[] nbTicketsOnPage = {2, 4}; // nb columns, nb rows (landscape format)
-final int nbTicketsPerBooklet = 10;
-final int nbBooklets = 8;
+final int[] nbTicketsOnPage = {2, 4}; // nb colonnes, nb lignes (format paysage)
+final int nbTicketsPerBooklet = 5;    // nb de tickets dans un seul carnet
+final int nbBooklets = 8;             // nb de carnets à créer
+
 int nbPages = nbTicketsPerBooklet * ceil(nbBooklets * 1.0f / intArrayMultiply(nbTicketsOnPage));
 
 final int cutLineLen = 50;
@@ -39,7 +44,8 @@ void draw() {
   for(int i = 0; i < nbTicketsOnPage[0]; i++) {
     int x = i * (img.width + 2);
     for(int j = 0; j < nbTicketsOnPage[1]; j++) {
-      int index = indexBeg + (curPage/nbTicketsPerBooklet) * intArrayMultiply(nbTicketsOnPage) * nbTicketsPerBooklet + i*nbTicketsPerBooklet + curPage%nbTicketsPerBooklet;
+      // bug à corriger
+      int index = indexBeg + (curPage/nbTicketsPerBooklet) * intArrayMultiply(nbTicketsOnPage) * nbTicketsPerBooklet + i*nbTicketsOnPage[0]+j*nbTicketsOnPage[1] + curPage%nbTicketsPerBooklet;
       int y = j * (img.height + 2);
       image(img, x, y);
       for(PVector vec : indexCoordinates) {
