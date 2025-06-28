@@ -12,8 +12,9 @@ final PVector[] indexCoordinates = {   // coordonnées ou écrire le numéro du 
 final int indexFontSize = 34;          // taille de police pour l'intégration du numéro de ticket
 
 final int[] nbTicketsOnPage = {2, 4}; // nb colonnes, nb lignes (format paysage)
-final int nbTicketsPerBooklet = 5;    // nb de tickets dans un seul carnet
+final int nbTicketsPerBooklet = 10;    // nb de tickets dans un seul carnet
 final int nbBooklets = 8;             // nb de carnets à créer
+final int nbTicketsTotal = nbTicketsPerBooklet*nbBooklets;
 
 int nbPages = nbTicketsPerBooklet * ceil(nbBooklets * 1.0f / intArrayMultiply(nbTicketsOnPage));
 
@@ -21,7 +22,7 @@ final int cutLineLen = 50;
 
 int curPage = 0;
 
-String exportFile = "exports\\export_"+nf(indexBeg,nbDigitsForIndex)+"_"+nf((indexBeg+intArrayMultiply(nbTicketsOnPage)*nbPages-1), nbDigitsForIndex)+".pdf";
+String exportFile = "exports\\export_"+nf(indexBeg,nbDigitsForIndex)+"_"+nf(indexBeg+nbTicketsTotal-1, nbDigitsForIndex)+".pdf";
 
 
 
@@ -44,12 +45,13 @@ void draw() {
   for(int i = 0; i < nbTicketsOnPage[0]; i++) {
     int x = i * (img.width + 2);
     for(int j = 0; j < nbTicketsOnPage[1]; j++) {
-      // bug à corriger
-      int index = indexBeg + (curPage/nbTicketsPerBooklet) * intArrayMultiply(nbTicketsOnPage) * nbTicketsPerBooklet + i*nbTicketsOnPage[0]+j*nbTicketsOnPage[1] + curPage%nbTicketsPerBooklet;
+      int index = indexBeg + (curPage/nbTicketsPerBooklet) * intArrayMultiply(nbTicketsOnPage) * nbTicketsPerBooklet + (i*nbTicketsOnPage[1] + j)*nbTicketsPerBooklet + curPage%nbTicketsPerBooklet;
       int y = j * (img.height + 2);
-      image(img, x, y);
-      for(PVector vec : indexCoordinates) {
-        text("N° " + nf(index, nbDigitsForIndex), vec.x+x, vec.y+y);
+      if (index <= indexBeg + nbTicketsTotal) {
+        image(img, x, y);
+        for(PVector vec : indexCoordinates) {
+          text("N° " + nf(index, nbDigitsForIndex), vec.x+x, vec.y+y);
+        }
       }
       if(curPage % nbTicketsPerBooklet == 0) {
         line(0, y+img.height, cutLineLen, y+img.height);
