@@ -10,6 +10,7 @@ final PVector[] indexCoordinates = {   // coordonnées ou écrire le numéro du 
   new PVector(1280, 450)
 };
 final int indexFontSize = 34;          // taille de police pour l'intégration du numéro de ticket
+final String textBeforeIndex = "N° ";  // texte à ajouter avant le numéro du ticket
 
 final int[] nbTicketsOnPage = {2, 4}; // nb colonnes, nb lignes (format paysage)
 final int nbTicketsPerBooklet = 10;    // nb de tickets dans un seul carnet
@@ -19,6 +20,7 @@ final int nbTicketsTotal = nbTicketsPerBooklet*nbBooklets;
 int nbPages = nbTicketsPerBooklet * ceil(nbBooklets * 1.0f / intArrayMultiply(nbTicketsOnPage));
 
 final int cutLineLen = 50;
+final int progressStringLen = 64;
 
 int curPage = 0;
 
@@ -50,7 +52,7 @@ void draw() {
       if (index <= indexBeg + nbTicketsTotal) {
         image(img, x, y);
         for(PVector vec : indexCoordinates) {
-          text("N° " + nf(index, nbDigitsForIndex), vec.x+x, vec.y+y);
+          text(textBeforeIndex + nf(index, nbDigitsForIndex), vec.x+x, vec.y+y);
         }
       }
       if(curPage % nbTicketsPerBooklet == 0) {
@@ -75,6 +77,17 @@ void draw() {
   } else {
     curPage++;
     pdf.nextPage();  // Tell it to go to the next page
+    int curProgress = round(map(curPage, 0, nbPages, 0, progressStringLen));
+    String progressLine = "[";
+    for(int p = 0; p < curProgress; p++) {
+      progressLine += "=";
+    }
+    for(int p = curProgress; p < progressStringLen; p++) {
+      progressLine += " ";
+    }
+    progressLine += "] (";
+    progressLine += (curPage*100/nbPages) + "%)";
+    println(progressLine);
   }
 }
 
